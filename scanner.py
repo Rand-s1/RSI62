@@ -19,7 +19,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# iOS风格CSS样式
+# iOS风格CSS样式 - 支持深色模式
 st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;500;600;700&display=swap');
@@ -29,18 +29,71 @@ st.markdown("""
         font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
     }
     
+    /* 检测深色模式 */
+    :root {
+        --bg-primary: #f5f7fa;
+        --bg-secondary: #ffffff;
+        --text-primary: #1d1d1f;
+        --text-secondary: #86868b;
+        --card-bg: rgba(255, 255, 255, 0.85);
+        --card-border: rgba(255, 255, 255, 0.2);
+        --shadow: rgba(0, 0, 0, 0.08);
+        --blue: #007AFF;
+        --green: #34C759;
+        --red: #FF3B30;
+        --orange: #FF9500;
+    }
+    
+    /* 深色模式变量 */
+    @media (prefers-color-scheme: dark) {
+        :root {
+            --bg-primary: #1c1c1e;
+            --bg-secondary: #2c2c2e;
+            --text-primary: #ffffff;
+            --text-secondary: #8e8e93;
+            --card-bg: rgba(44, 44, 46, 0.85);
+            --card-border: rgba(84, 84, 88, 0.3);
+            --shadow: rgba(0, 0, 0, 0.3);
+            --blue: #0A84FF;
+            --green: #30D158;
+            --red: #FF453A;
+            --orange: #FF9F0A;
+        }
+    }
+    
+    /* 强制深色模式支持 */
+    [data-theme="dark"] {
+        --bg-primary: #1c1c1e;
+        --bg-secondary: #2c2c2e;
+        --text-primary: #ffffff;
+        --text-secondary: #8e8e93;
+        --card-bg: rgba(44, 44, 46, 0.85);
+        --card-border: rgba(84, 84, 88, 0.3);
+        --shadow: rgba(0, 0, 0, 0.3);
+        --blue: #0A84FF;
+        --green: #30D158;
+        --red: #FF453A;
+        --orange: #FF9F0A;
+    }
+    
     /* 主容器 */
     .main {
-        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
         padding: 1rem;
         min-height: 100vh;
+        color: var(--text-primary);
+    }
+    
+    /* Streamlit 容器背景 */
+    .stApp {
+        background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
     }
     
     /* iOS风格标题 */
     .ios-title {
         font-size: 2.5rem;
         font-weight: 700;
-        color: #1d1d1f;
+        color: var(--text-primary) !important;
         text-align: center;
         margin-bottom: 0.5rem;
         letter-spacing: -0.02em;
@@ -49,27 +102,28 @@ st.markdown("""
     .ios-subtitle {
         font-size: 1.1rem;
         font-weight: 400;
-        color: #86868b;
+        color: var(--text-secondary) !important;
         text-align: center;
         margin-bottom: 0;
     }
     
     /* iOS风格卡片 */
     .ios-card {
-        background: rgba(255, 255, 255, 0.85);
+        background: var(--card-bg);
         backdrop-filter: blur(20px);
         -webkit-backdrop-filter: blur(20px);
         border-radius: 16px;
         padding: 1.5rem;
         margin: 1rem 0;
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+        border: 1px solid var(--card-border);
+        box-shadow: 0 8px 32px var(--shadow);
+        color: var(--text-primary);
     }
     
     /* iOS风格按钮 */
     .stButton > button {
-        background: linear-gradient(135deg, #007AFF 0%, #0051D5 100%);
-        color: white;
+        background: linear-gradient(135deg, var(--blue) 0%, #0051D5 100%);
+        color: white !important;
         border: none;
         border-radius: 12px;
         padding: 0.75rem 1.5rem;
@@ -93,14 +147,15 @@ st.markdown("""
     
     /* iOS风格指标卡片 */
     .ios-metric {
-        background: rgba(255, 255, 255, 0.9);
+        background: var(--card-bg);
         backdrop-filter: blur(20px);
         border-radius: 12px;
         padding: 1rem;
         text-align: center;
-        border: 1px solid rgba(255, 255, 255, 0.3);
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--card-border);
+        box-shadow: 0 4px 16px var(--shadow);
         transition: transform 0.2s ease;
+        color: var(--text-primary);
     }
     
     .ios-metric:hover {
@@ -110,69 +165,100 @@ st.markdown("""
     .ios-metric-value {
         font-size: 1.8rem;
         font-weight: 700;
-        color: #1d1d1f;
+        color: var(--text-primary) !important;
         margin-bottom: 0.25rem;
     }
     
     .ios-metric-label {
         font-size: 0.85rem;
         font-weight: 500;
-        color: #86868b;
+        color: var(--text-secondary) !important;
         text-transform: uppercase;
         letter-spacing: 0.5px;
     }
     
     /* 侧边栏样式 */
     .sidebar .sidebar-content {
-        background: rgba(255, 255, 255, 0.95);
+        background: var(--card-bg) !important;
         backdrop-filter: blur(20px);
         border-radius: 0 16px 16px 0;
+        color: var(--text-primary);
     }
     
     .sidebar .sidebar-content .block-container {
         padding-top: 2rem;
     }
     
+    /* 侧边栏标签和文本 */
+    .sidebar label {
+        color: var(--text-primary) !important;
+    }
+    
+    .sidebar .stMarkdown {
+        color: var(--text-primary) !important;
+    }
+    
     /* 数据表格iOS风格 */
     .dataframe {
-        background: rgba(255, 255, 255, 0.9);
+        background: var(--card-bg) !important;
         backdrop-filter: blur(20px);
         border-radius: 12px;
         overflow: hidden;
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--card-border);
+        box-shadow: 0 4px 16px var(--shadow);
+    }
+    
+    /* 表格内容颜色 */
+    .dataframe table {
+        color: var(--text-primary) !important;
+    }
+    
+    .dataframe th {
+        background-color: var(--bg-secondary) !important;
+        color: var(--text-primary) !important;
+    }
+    
+    .dataframe td {
+        color: var(--text-primary) !important;
     }
     
     /* 输入框样式 */
     .stNumberInput > div > div > input {
-        background: rgba(255, 255, 255, 0.9);
-        border: 1px solid rgba(0, 0, 0, 0.1);
+        background: var(--card-bg) !important;
+        border: 1px solid var(--card-border) !important;
         border-radius: 8px;
         padding: 0.5rem;
         transition: all 0.2s ease;
+        color: var(--text-primary) !important;
     }
     
     .stNumberInput > div > div > input:focus {
-        border-color: #007AFF;
+        border-color: var(--blue) !important;
         box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
     }
     
     .stSelectbox > div > div > select {
-        background: rgba(255, 255, 255, 0.9);
-        border: 1px solid rgba(0, 0, 0, 0.1);
+        background: var(--card-bg) !important;
+        border: 1px solid var(--card-border) !important;
         border-radius: 8px;
         padding: 0.5rem;
         transition: all 0.2s ease;
+        color: var(--text-primary) !important;
     }
     
     .stSelectbox > div > div > select:focus {
-        border-color: #007AFF;
+        border-color: var(--blue) !important;
         box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
+    }
+    
+    /* 标签颜色 */
+    .stNumberInput label, .stSelectbox label {
+        color: var(--text-primary) !important;
     }
     
     /* 进度条样式 */
     .stProgress > div > div {
-        background: linear-gradient(90deg, #007AFF, #0051D5);
+        background: linear-gradient(90deg, var(--blue), #0051D5);
         border-radius: 6px;
         height: 6px;
     }
@@ -181,42 +267,42 @@ st.markdown("""
     .stAlert {
         border-radius: 12px;
         backdrop-filter: blur(20px);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        font-weight: 500;
+        border: 1px solid var(--card-border);
+        color: var(--text-primary) !important;
     }
     
     /* 成功消息 */
     .stSuccess {
-        background: rgba(52, 199, 89, 0.1);
-        border: 1px solid rgba(52, 199, 89, 0.3);
-        color: #34C759;
+        background: rgba(52, 199, 89, 0.1) !important;
+        border: 1px solid var(--green) !important;
+        color: var(--green) !important;
     }
     
     /* 信息消息 */
     .stInfo {
-        background: rgba(0, 122, 255, 0.1);
-        border: 1px solid rgba(0, 122, 255, 0.3);
-        color: #007AFF;
+        background: rgba(0, 122, 255, 0.1) !important;
+        border: 1px solid var(--blue) !important;
+        color: var(--blue) !important;
     }
     
     /* 警告消息 */
     .stWarning {
-        background: rgba(255, 149, 0, 0.1);
-        border: 1px solid rgba(255, 149, 0, 0.3);
-        color: #FF9500;
+        background: rgba(255, 149, 0, 0.1) !important;
+        border: 1px solid var(--orange) !important;
+        color: var(--orange) !important;
     }
     
     /* 错误消息 */
     .stError {
-        background: rgba(255, 59, 48, 0.1);
-        border: 1px solid rgba(255, 59, 48, 0.3);
-        color: #FF3B30;
+        background: rgba(255, 59, 48, 0.1) !important;
+        border: 1px solid var(--red) !important;
+        color: var(--red) !important;
     }
     
     /* 下载按钮样式 */
     .stDownloadButton > button {
-        background: rgba(52, 199, 89, 0.9);
-        color: white;
+        background: var(--green) !important;
+        color: white !important;
         border: none;
         border-radius: 10px;
         padding: 0.5rem 1rem;
@@ -225,21 +311,43 @@ st.markdown("""
     }
     
     .stDownloadButton > button:hover {
-        background: rgba(52, 199, 89, 1);
+        background: #30D158 !important;
         transform: translateY(-1px);
     }
     
     /* Checkbox 样式 */
     .stCheckbox > label {
-        color: #1d1d1f;
+        color: var(--text-primary) !important;
         font-weight: 500;
     }
     
     /* Expander 样式 */
     .streamlit-expanderHeader {
-        background: rgba(255, 255, 255, 0.5);
+        background: var(--card-bg) !important;
         border-radius: 8px;
-        border: 1px solid rgba(0, 0, 0, 0.1);
+        border: 1px solid var(--card-border) !important;
+        color: var(--text-primary) !important;
+    }
+    
+    .streamlit-expanderContent {
+        background: var(--card-bg) !important;
+        border: 1px solid var(--card-border) !important;
+        color: var(--text-primary) !important;
+    }
+    
+    /* Spinner 样式 */
+    .stSpinner {
+        color: var(--blue) !important;
+    }
+    
+    /* 文本颜色强制设置 */
+    .stMarkdown, .stText {
+        color: var(--text-primary) !important;
+    }
+    
+    /* 强制设置所有文本元素 */
+    h1, h2, h3, h4, h5, h6, p, div, span, label {
+        color: var(--text-primary) !important;
     }
     
     /* 隐藏Streamlit默认元素 */
@@ -265,6 +373,25 @@ st.markdown("""
         }
     }
 </style>
+
+<script>
+// 检测系统主题并应用
+function detectTheme() {
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.documentElement.setAttribute('data-theme', 'dark');
+    } else {
+        document.documentElement.setAttribute('data-theme', 'light');
+    }
+}
+
+// 监听主题变化
+if (window.matchMedia) {
+    window.matchMedia('(prefers-color-scheme: dark)').addListener(detectTheme);
+}
+
+// 初始化主题
+detectTheme();
+</script>
 """, unsafe_allow_html=True)
 
 # 设置日志
@@ -309,7 +436,7 @@ def create_sidebar():
     with st.sidebar:
         st.markdown("""
         <div style="text-align: center; padding: 1rem 0 2rem 0;">
-            <h3 style="color: #1d1d1f; font-weight: 600; margin: 0;">⚙️ 扫描设置</h3>
+            <h3 style="font-weight: 600; margin: 0;">⚙️ 扫描设置</h3>
         </div>
         """, unsafe_allow_html=True)
         
@@ -324,7 +451,7 @@ def create_sidebar():
         
         st.markdown("""
         <div style="padding: 1rem 0;">
-            <h4 style="color: #1d1d1f; font-weight: 600; margin-bottom: 1rem;">🎯 RSI阈值设置</h4>
+            <h4 style="font-weight: 600; margin-bottom: 1rem;">🎯 RSI阈值设置</h4>
         </div>
         """, unsafe_allow_html=True)
         
@@ -385,10 +512,12 @@ def create_ios_section_header(title: str, subtitle: str = ""):
     """创建iOS风格章节标题"""
     st.markdown(f"""
     <div class="ios-card">
-        <h2 style="color: #1d1d1f; font-weight: 600; margin-bottom: 0.5rem;">{title}</h2>
-        {f'<p style="color: #86868b; margin: 0; font-size: 0.95rem;">{subtitle}</p>' if subtitle else ''}
+        <h2 style="font-weight: 600; margin-bottom: 0.5rem;">{title}</h2>
+        {f'<p style="margin: 0; font-size: 0.95rem; opacity: 0.8;">{subtitle}</p>' if subtitle else ''}
     </div>
     """, unsafe_allow_html=True)
+
+# ... 保持其他函数不变 ...
 
 def ping_endpoint(endpoint: str) -> bool:
     """测试端点是否可用"""
@@ -480,16 +609,13 @@ def fetch_all_tickers(base: str) -> Dict[str, dict]:
         tickers = {}
         for item in j["data"]:
             try:
-                # 打印第一个item的结构，用于调试
                 if len(tickers) == 0:
                     logger.info(f"Ticker数据结构示例: {list(item.keys())}")
                 
-                # 兼容不同的字段名
                 symbol = item.get("symbol", "")
                 if not symbol:
                     continue
                 
-                # 尝试不同的字段名
                 change24h = 0.0
                 if "change24h" in item:
                     change24h = float(item["change24h"]) * 100
@@ -498,7 +624,6 @@ def fetch_all_tickers(base: str) -> Dict[str, dict]:
                 elif "changeUtc24h" in item:
                     change24h = float(item["changeUtc24h"]) * 100
                 
-                # 成交量字段
                 volume = 0.0
                 if "baseVolume" in item:
                     volume = float(item["baseVolume"])
@@ -507,7 +632,6 @@ def fetch_all_tickers(base: str) -> Dict[str, dict]:
                 elif "vol24h" in item:
                     volume = float(item["vol24h"])
                 
-                # 价格字段
                 price = 0.0
                 if "close" in item:
                     price = float(item["close"])
@@ -545,11 +669,9 @@ def calculate_rsi_and_metrics(df: pd.DataFrame) -> Tuple[Optional[float], int, d
         if candle_count < Config.RSI_PERIOD + 1:
             return None, candle_count, {}
             
-        # 计算RSI
         rsi_series = ta.momentum.RSIIndicator(close=close_series, window=Config.RSI_PERIOD).rsi()
         rsi = rsi_series.iloc[-1]
         
-        # 计算其他指标
         metrics = {
             "sma_20": ta.trend.sma_indicator(close_series, window=20).iloc[-1] if candle_count >= 20 else None,
             "volatility": close_series.pct_change().std() * 100,
@@ -571,13 +693,12 @@ def fetch_candles_wrapper(args) -> tuple:
     return symbol, df
 
 def create_rsi_distribution_chart(results: List[dict]):
-    """创建RSI分布图表"""
+    """创建RSI分布图表 - 深色模式适配"""
     if not results:
         return None
         
     df = pd.DataFrame(results)
     
-    # RSI分布直方图
     fig = px.histogram(
         df, 
         x="rsi6", 
@@ -587,29 +708,29 @@ def create_rsi_distribution_chart(results: List[dict]):
         color_discrete_sequence=["#007AFF"]
     )
     
-    # 添加超买超卖线
     fig.add_vline(x=30, line_dash="dash", line_color="#34C759", annotation_text="超卖线 (30)")
     fig.add_vline(x=70, line_dash="dash", line_color="#FF3B30", annotation_text="超买线 (70)")
     
+    # 深色模式适配
     fig.update_layout(
-        template="plotly_white",
+        template="plotly_dark",
         height=400,
         showlegend=False,
-        font=dict(family="SF Pro Display, -apple-system, BlinkMacSystemFont"),
+        font=dict(family="SF Pro Display, -apple-system, BlinkMacSystemFont", color="#ffffff"),
         plot_bgcolor='rgba(0,0,0,0)',
-        paper_bgcolor='rgba(0,0,0,0)'
+        paper_bgcolor='rgba(0,0,0,0)',
+        title_font_color="#ffffff"
     )
     
     return fig
 
 def create_scatter_plot(results: List[dict]):
-    """创建RSI vs 涨跌幅散点图"""
+    """创建RSI vs 涨跌幅散点图 - 深色模式适配"""
     if not results:
         return None
         
     df = pd.DataFrame(results)
     
-    # 根据RSI区间着色
     def get_color(rsi):
         if rsi < 30:
             return "超卖"
@@ -635,17 +756,18 @@ def create_scatter_plot(results: List[dict]):
         }
     )
     
-    # 添加分割线
     fig.add_hline(y=0, line_dash="dash", line_color="#8E8E93", annotation_text="涨跌分界线")
     fig.add_vline(x=30, line_dash="dash", line_color="#34C759")
     fig.add_vline(x=70, line_dash="dash", line_color="#FF3B30")
     
+    # 深色模式适配
     fig.update_layout(
-        template="plotly_white",
+        template="plotly_dark",
         height=400,
-        font=dict(family="SF Pro Display, -apple-system, BlinkMacSystemFont"),
+        font=dict(family="SF Pro Display, -apple-system, BlinkMacSystemFont", color="#ffffff"),
         plot_bgcolor='rgba(0,0,0,0)',
-        paper_bgcolor='rgba(0,0,0,0)'
+        paper_bgcolor='rgba(0,0,0,0)',
+        title_font_color="#ffffff"
     )
     
     return fig
@@ -655,7 +777,6 @@ def format_dataframe(df: pd.DataFrame, is_gainer: bool = True) -> pd.DataFrame:
     if df.empty:
         return df
         
-    # 添加趋势图标
     def add_trend_icon(row):
         change = row["change (%)"]
         rsi = row["rsi6"]
@@ -685,18 +806,15 @@ def scan_symbols(base: str, symbols: List[str], granularity: str, rsi_low: float
     start_time = time.time()
     results = []
     
-    # 获取ticker数据
     with st.spinner("📊 正在获取市场数据..."):
         tickers = fetch_all_tickers(base)
         if not tickers:
             st.warning("⚠️ 无法获取完整的市场数据，将使用默认值")
             tickers = {}
     
-    # 进度条容器
     progress_container = st.empty()
     status_container = st.empty()
     
-    # 并行获取K线数据
     candle_data = {}
     total_symbols = len(symbols)
     processed = 0
@@ -711,16 +829,13 @@ def scan_symbols(base: str, symbols: List[str], granularity: str, rsi_low: float
             if not df.empty:
                 candle_data[symbol] = df
                 
-            # 更新进度
             progress = processed / total_symbols
             progress_container.progress(progress, text=f"🔄 获取K线数据: {processed}/{total_symbols}")
             status_container.info(f"⏱️ 正在处理: {symbol}")
     
-    # 清除进度显示
     progress_container.empty()
     status_container.empty()
     
-    # 处理数据
     with st.spinner("🧮 正在计算技术指标..."):
         insufficient_data = []
         
@@ -736,18 +851,15 @@ def scan_symbols(base: str, symbols: List[str], granularity: str, rsi_low: float
                     insufficient_data.append(symbol)
                     continue
                 
-                # 使用默认值如果ticker数据不可用
                 ticker_data = tickers.get(symbol, {
                     "change24h": 0, 
                     "volume": 0, 
                     "price": 0
                 })
                 
-                # 应用成交量过滤
                 if ticker_data["volume"] < min_volume:
                     continue
                 
-                # 检查RSI条件
                 if rsi < rsi_low or rsi > rsi_high:
                     note = ""
                     if candle_count < Config.MIN_CANDLES_RELIABLE:
@@ -768,7 +880,6 @@ def scan_symbols(base: str, symbols: List[str], granularity: str, rsi_low: float
                 logger.warning(f"{symbol} 处理失败: {e}")
                 continue
     
-    # 确保scan_stats包含所有必需的字段
     scan_stats = {
         "scan_time": time.time() - start_time,
         "total_symbols": total_symbols,
@@ -780,72 +891,58 @@ def scan_symbols(base: str, symbols: List[str], granularity: str, rsi_low: float
     return results, scan_stats
 
 def main():
-    # 创建页面头部
     create_header()
     
-    # 创建侧边栏并获取参数
     timeframe, rsi_low, rsi_high, show_charts, min_volume = create_sidebar()
     
-    # 主要内容区域
     col1, col2 = st.columns([4, 1])
     
     with col2:
         st.markdown("""
         <div class="ios-card">
-            <h4 style="color: #1d1d1f; margin-bottom: 1rem;">🚀 开始扫描</h4>
+            <h4 style="font-weight: 600; margin-bottom: 1rem;">🚀 开始扫描</h4>
         </div>
         """, unsafe_allow_html=True)
         
-        # 扫描按钮
         if st.button("开始扫描", key="scan_button"):
             scan_pressed = True
         else:
             scan_pressed = False
             
-        # 显示当前设置
         st.markdown(f"""
         <div class="ios-card">
-            <h4 style="color: #1d1d1f; margin-bottom: 1rem;">📋 当前设置</h4>
-            <div style="color: #86868b; line-height: 1.6;">
-                <p style="margin-bottom: 0.5rem;"><strong style="color: #1d1d1f;">时间框架:</strong> {timeframe}</p>
-                <p style="margin-bottom: 0.5rem;"><strong style="color: #1d1d1f;">超卖线:</strong> {rsi_low}</p>
-                <p style="margin-bottom: 0.5rem;"><strong style="color: #1d1d1f;">超买线:</strong> {rsi_high}</p>
-                {f'<p style="margin-bottom: 0.5rem;"><strong style="color: #1d1d1f;">最小成交量:</strong> {min_volume:,.0f}</p>' if min_volume > 0 else ''}
+            <h4 style="font-weight: 600; margin-bottom: 1rem;">📋 当前设置</h4>
+            <div style="line-height: 1.6; opacity: 0.8;">
+                <p style="margin-bottom: 0.5rem;"><strong>时间框架:</strong> {timeframe}</p>
+                <p style="margin-bottom: 0.5rem;"><strong>超卖线:</strong> {rsi_low}</p>
+                <p style="margin-bottom: 0.5rem;"><strong>超买线:</strong> {rsi_high}</p>
+                {f'<p style="margin-bottom: 0.5rem;"><strong>最小成交量:</strong> {min_volume:,.0f}</p>' if min_volume > 0 else ''}
             </div>
         </div>
         """, unsafe_allow_html=True)
     
     with col1:
         if not scan_pressed:
-            # 使用指南
             st.markdown("""
             <div class="ios-card">
-                <h3 style="color: #1d1d1f; margin-bottom: 1rem;">🎯 使用指南</h3>
-                <div style="color: #86868b; line-height: 1.6;">
-                    <p><strong style="color: #1d1d1f;">RSI6扫描器</strong>是一个专业的技术分析工具，帮助您快速找到具有极端RSI值的交易机会。</p>
+                <h3 style="font-weight: 600; margin-bottom: 1rem;">🎯 使用指南</h3>
+                <div style="line-height: 1.6; opacity: 0.9;">
+                    <p><strong>RSI6扫描器</strong>是一个专业的技术分析工具，帮助您快速找到具有极端RSI值的交易机会。</p>
                     
-                    <h4 style="color: #1d1d1f; margin-top: 1.5rem; margin-bottom: 0.5rem;">📊 功能特点</h4>
+                    <h4 style="font-weight: 600; margin-top: 1.5rem; margin-bottom: 0.5rem;">📊 功能特点</h4>
                     <ul style="padding-left: 1.2rem;">
-                        <li style="margin-bottom: 0.3rem;">🔄 <strong style="color: #1d1d1f;">实时扫描</strong>: 并行处理所有USDT永续合约</li>
-                        <li style="margin-bottom: 0.3rem;">📈 <strong style="color: #1d1d1f;">多时间框架</strong>: 支持1H、4H、1D级别分析</li>
-                        <li style="margin-bottom: 0.3rem;">🎨 <strong style="color: #1d1d1f;">可视化分析</strong>: 直观的图表和统计信息</li>
-                        <li style="margin-bottom: 0.3rem;">📁 <strong style="color: #1d1d1f;">数据导出</strong>: 支持CSV格式下载</li>
+                        <li style="margin-bottom: 0.3rem;">🔄 <strong>实时扫描</strong>: 并行处理所有USDT永续合约</li>
+                        <li style="margin-bottom: 0.3rem;">📈 <strong>多时间框架</strong>: 支持1H、4H、1D级别分析</li>
+                        <li style="margin-bottom: 0.3rem;">🎨 <strong>可视化分析</strong>: 直观的图表和统计信息</li>
+                        <li style="margin-bottom: 0.3rem;">📁 <strong>数据导出</strong>: 支持CSV格式下载</li>
                     </ul>
                     
-                    <h4 style="color: #1d1d1f; margin-top: 1.5rem; margin-bottom: 0.5rem;">🎯 交易信号</h4>
+                    <h4 style="font-weight: 600; margin-top: 1.5rem; margin-bottom: 0.5rem;">🎯 交易信号</h4>
                     <ul style="padding-left: 1.2rem;">
-                        <li style="margin-bottom: 0.3rem;">🟢 <strong style="color: #34C759;">超卖信号</strong> (RSI < 30): 可能的买入机会</li>
-                        <li style="margin-bottom: 0.3rem;">🔴 <strong style="color: #FF3B30;">超买信号</strong> (RSI > 70): 可能的卖出机会</li>
-                        <li style="margin-bottom: 0.3rem;">⚠️ <strong style="color: #FF9500;">数据提醒</strong>: 自动标注K线数据不足的币种</li>
+                        <li style="margin-bottom: 0.3rem;">🟢 <strong>超卖信号</strong> (RSI < 30): 可能的买入机会</li>
+                        <li style="margin-bottom: 0.3rem;">🔴 <strong>超买信号</strong> (RSI > 70): 可能的卖出机会</li>
+                        <li style="margin-bottom: 0.3rem;">⚠️ <strong>数据提醒</strong>: 自动标注K线数据不足的币种</li>
                     </ul>
-                    
-                    <h4 style="color: #1d1d1f; margin-top: 1.5rem; margin-bottom: 0.5rem;">🚀 开始使用</h4>
-                    <ol style="padding-left: 1.2rem;">
-                        <li style="margin-bottom: 0.3rem;">在左侧设置您的扫描参数</li>
-                        <li style="margin-bottom: 0.3rem;">点击"开始扫描"按钮</li>
-                        <li style="margin-bottom: 0.3rem;">等待扫描完成并查看结果</li>
-                        <li style="margin-bottom: 0.3rem;">可选择下载数据进行进一步分析</li>
-                    </ol>
                 </div>
             </div>
             """, unsafe_allow_html=True)
@@ -853,43 +950,34 @@ def main():
     
     if scan_pressed:
         try:
-            # 获取API端点
             with st.spinner("🔗 连接到Bitget API..."):
                 base = get_working_endpoint()
                 st.success("✅ API连接成功")
             
-            # 获取交易对
             with st.spinner("📋 获取交易对列表..."):
                 symbols = get_usdt_symbols(base)
                 st.success(f"✅ 找到 {len(symbols)} 个USDT永续合约")
             
-            # 执行扫描
             results, scan_stats = scan_symbols(base, symbols, timeframe, rsi_low, rsi_high, min_volume)
             
-            # 显示扫描统计
             st.success(f"✅ 扫描完成! 耗时 {scan_stats['scan_time']:.1f} 秒")
             
             if scan_stats['insufficient_data'] > 0:
                 st.info(f"ℹ️ 有 {scan_stats['insufficient_data']} 个币种数据不足，已跳过")
             
-            # 分类结果
             gainers = sorted([r for r in results if r["change (%)"] > 0], key=lambda x: x["rsi6"], reverse=True)
             losers = sorted([r for r in results if r["change (%)"] <= 0], key=lambda x: x["rsi6"])
             
-            # 显示统计卡片
             create_ios_statistics_cards(results, scan_stats['total_symbols'])
             
-            # 显示结果表格
             current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             
-            # 超买区域（涨幅榜）
             create_ios_section_header("🔥 超买区域", f"RSI6 {timeframe} > {rsi_high}")
             if gainers:
                 gainers_df = pd.DataFrame(gainers)
                 formatted_gainers = format_dataframe(gainers_df, True)
                 st.dataframe(formatted_gainers, use_container_width=True, hide_index=True)
                 
-                # 下载按钮
                 csv_data = gainers_df.to_csv(index=False)
                 st.download_button(
                     label="📥 下载超买数据 CSV",
@@ -901,14 +989,12 @@ def main():
             else:
                 st.info("🤔 当前没有符合条件的超买信号")
             
-            # 超卖区域（跌幅榜）  
             create_ios_section_header("💎 超卖区域", f"RSI6 {timeframe} < {rsi_low}")
             if losers:
                 losers_df = pd.DataFrame(losers)
                 formatted_losers = format_dataframe(losers_df, False)
                 st.dataframe(formatted_losers, use_container_width=True, hide_index=True)
                 
-                # 下载按钮
                 csv_data = losers_df.to_csv(index=False)
                 st.download_button(
                     label="📥 下载超卖数据 CSV", 
@@ -920,7 +1006,6 @@ def main():
             else:
                 st.info("🤔 当前没有符合条件的超卖信号")
             
-            # 显示图表分析
             if show_charts and results:
                 create_ios_section_header("📊 数据分析", "可视化图表分析")
                 
@@ -936,7 +1021,6 @@ def main():
                     if scatter_chart:
                         st.plotly_chart(scatter_chart, use_container_width=True)
                 
-            # 扫描信息
             with st.expander("ℹ️ 扫描详情"):
                 st.markdown(f"""
                 **扫描时间**: {current_time}  
@@ -951,11 +1035,10 @@ def main():
             st.error(f"❌ 扫描过程中发生错误: {str(e)}")
             logger.error(f"扫描错误: {e}")
 
-    # 页脚
     st.markdown("""
     <div class="ios-card" style="text-align: center; margin-top: 2rem;">
-        <p style="color: #86868b; margin: 0; font-size: 0.9rem;">📱 RSI6 扫描器 - iOS风格版本</p>
-        <p style="color: #86868b; margin: 0.25rem 0 0 0; font-size: 0.8rem;">专业的加密货币技术分析工具</p>
+        <p style="margin: 0; font-size: 0.9rem; opacity: 0.8;">📱 RSI6 扫描器 - iOS风格版本</p>
+        <p style="margin: 0.25rem 0 0 0; font-size: 0.8rem; opacity: 0.6;">专业的加密货币技术分析工具</p>
     </div>
     """, unsafe_allow_html=True)
 
