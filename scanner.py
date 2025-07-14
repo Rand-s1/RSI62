@@ -19,7 +19,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# iOS风格CSS样式 - 支持深色模式
+# iOS风格CSS样式 - 修复版本
 st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;500;600;700&display=swap');
@@ -84,6 +84,17 @@ st.markdown("""
         color: var(--text-primary);
     }
     
+    /* 平滑滚动 */
+    html {
+        scroll-behavior: smooth;
+    }
+    
+    .main .block-container {
+        max-width: 100%;
+        padding-top: 1rem;
+        padding-bottom: 1rem;
+    }
+    
     /* Streamlit 容器背景 */
     .stApp {
         background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
@@ -118,6 +129,21 @@ st.markdown("""
         border: 1px solid var(--card-border);
         box-shadow: 0 8px 32px var(--shadow);
         color: var(--text-primary);
+    }
+    
+    /* 卡片内的标题和文本 */
+    .ios-card h3, .ios-card h4 {
+        color: var(--text-primary) !important;
+        font-weight: 600;
+    }
+    
+    .ios-card p, .ios-card li {
+        color: var(--text-primary) !important;
+        line-height: 1.6;
+    }
+    
+    .ios-card strong {
+        color: var(--text-primary) !important;
     }
     
     /* iOS风格按钮 */
@@ -256,11 +282,23 @@ st.markdown("""
         color: var(--text-primary) !important;
     }
     
-    /* 进度条样式 */
+    /* 进度条样式 - 修复重复显示 */
+    .stProgress {
+        margin: 1rem 0;
+    }
+    
+    .stProgress > div {
+        background-color: rgba(0, 0, 0, 0.1);
+        border-radius: 6px;
+        height: 6px;
+        overflow: hidden;
+    }
+    
     .stProgress > div > div {
         background: linear-gradient(90deg, var(--blue), #0051D5);
         border-radius: 6px;
-        height: 6px;
+        height: 100%;
+        transition: width 0.3s ease;
     }
     
     /* 警告和信息框 */
@@ -269,6 +307,7 @@ st.markdown("""
         backdrop-filter: blur(20px);
         border: 1px solid var(--card-border);
         color: var(--text-primary) !important;
+        margin: 1rem 0;
     }
     
     /* 成功消息 */
@@ -517,6 +556,35 @@ def create_ios_section_header(title: str, subtitle: str = ""):
     </div>
     """, unsafe_allow_html=True)
 
+def create_guide_section():
+    """创建使用指南 - 修复HTML显示问题"""
+    st.markdown("### 🎯 使用指南")
+    
+    st.markdown("**RSI6扫描器**是一个专业的技术分析工具，帮助您快速找到具有极端RSI值的交易机会。")
+    
+    st.markdown("#### 📊 功能特点")
+    st.markdown("""
+    - 🔄 **实时扫描**: 并行处理所有USDT永续合约
+    - 📈 **多时间框架**: 支持1H、4H、1D级别分析  
+    - 🎨 **可视化分析**: 直观的图表和统计信息
+    - 📁 **数据导出**: 支持CSV格式下载
+    """)
+    
+    st.markdown("#### 🎯 交易信号")
+    st.markdown("""
+    - 🟢 **超卖信号** (RSI < 30): 可能的买入机会
+    - 🔴 **超买信号** (RSI > 70): 可能的卖出机会
+    - ⚠️ **数据提醒**: 自动标注K线数据不足的币种
+    """)
+    
+    st.markdown("#### 🚀 开始使用")
+    st.markdown("""
+    1. 在左侧设置您的扫描参数
+    2. 点击"开始扫描"按钮
+    3. 等待扫描完成并查看结果
+    4. 可选择下载数据进行进一步分析
+    """)
+
 # ... 保持其他函数不变 ...
 
 def ping_endpoint(endpoint: str) -> bool:
@@ -711,7 +779,6 @@ def create_rsi_distribution_chart(results: List[dict]):
     fig.add_vline(x=30, line_dash="dash", line_color="#34C759", annotation_text="超卖线 (30)")
     fig.add_vline(x=70, line_dash="dash", line_color="#FF3B30", annotation_text="超买线 (70)")
     
-    # 深色模式适配
     fig.update_layout(
         template="plotly_dark",
         height=400,
@@ -760,7 +827,6 @@ def create_scatter_plot(results: List[dict]):
     fig.add_vline(x=30, line_dash="dash", line_color="#34C759")
     fig.add_vline(x=70, line_dash="dash", line_color="#FF3B30")
     
-    # 深色模式适配
     fig.update_layout(
         template="plotly_dark",
         height=400,
@@ -802,7 +868,7 @@ def format_dataframe(df: pd.DataFrame, is_gainer: bool = True) -> pd.DataFrame:
     return df_formatted[["交易对", "24h涨跌", "RSI6", "K线数", "备注"]]
 
 def scan_symbols(base: str, symbols: List[str], granularity: str, rsi_low: float, rsi_high: float, min_volume: float = 0) -> Tuple[List[dict], dict]:
-    """扫描交易对"""
+    """扫描交易对 - 修复进度条重复问题"""
     start_time = time.time()
     results = []
     
@@ -812,8 +878,9 @@ def scan_symbols(base: str, symbols: List[str], granularity: str, rsi_low: float
             st.warning("⚠️ 无法获取完整的市场数据，将使用默认值")
             tickers = {}
     
-    progress_container = st.empty()
-    status_container = st.empty()
+    # 使用单一的进度条容器
+    progress_placeholder = st.empty()
+    status_placeholder = st.empty()
     
     candle_data = {}
     total_symbols = len(symbols)
@@ -829,12 +896,14 @@ def scan_symbols(base: str, symbols: List[str], granularity: str, rsi_low: float
             if not df.empty:
                 candle_data[symbol] = df
                 
+            # 更新进度 - 使用单一容器
             progress = processed / total_symbols
-            progress_container.progress(progress, text=f"🔄 获取K线数据: {processed}/{total_symbols}")
-            status_container.info(f"⏱️ 正在处理: {symbol}")
+            progress_placeholder.progress(progress, text=f"🔄 获取K线数据: {processed}/{total_symbols}")
+            status_placeholder.info(f"⏱️ 正在处理: {symbol}")
     
-    progress_container.empty()
-    status_container.empty()
+    # 清除进度显示
+    progress_placeholder.empty()
+    status_placeholder.empty()
     
     with st.spinner("🧮 正在计算技术指标..."):
         insufficient_data = []
@@ -923,29 +992,17 @@ def main():
     
     with col1:
         if not scan_pressed:
-            st.markdown("""
-            <div class="ios-card">
-                <h3 style="font-weight: 600; margin-bottom: 1rem;">🎯 使用指南</h3>
-                <div style="line-height: 1.6; opacity: 0.9;">
-                    <p><strong>RSI6扫描器</strong>是一个专业的技术分析工具，帮助您快速找到具有极端RSI值的交易机会。</p>
-                    
-                    <h4 style="font-weight: 600; margin-top: 1.5rem; margin-bottom: 0.5rem;">📊 功能特点</h4>
-                    <ul style="padding-left: 1.2rem;">
-                        <li style="margin-bottom: 0.3rem;">🔄 <strong>实时扫描</strong>: 并行处理所有USDT永续合约</li>
-                        <li style="margin-bottom: 0.3rem;">📈 <strong>多时间框架</strong>: 支持1H、4H、1D级别分析</li>
-                        <li style="margin-bottom: 0.3rem;">🎨 <strong>可视化分析</strong>: 直观的图表和统计信息</li>
-                        <li style="margin-bottom: 0.3rem;">📁 <strong>数据导出</strong>: 支持CSV格式下载</li>
-                    </ul>
-                    
-                    <h4 style="font-weight: 600; margin-top: 1.5rem; margin-bottom: 0.5rem;">🎯 交易信号</h4>
-                    <ul style="padding-left: 1.2rem;">
-                        <li style="margin-bottom: 0.3rem;">🟢 <strong>超卖信号</strong> (RSI < 30): 可能的买入机会</li>
-                        <li style="margin-bottom: 0.3rem;">🔴 <strong>超买信号</strong> (RSI > 70): 可能的卖出机会</li>
-                        <li style="margin-bottom: 0.3rem;">⚠️ <strong>数据提醒</strong>: 自动标注K线数据不足的币种</li>
-                    </ul>
+            # 使用修复后的指南函数
+            with st.container():
+                st.markdown("""
+                <div class="ios-card">
+                """, unsafe_allow_html=True)
+                
+                create_guide_section()
+                
+                st.markdown("""
                 </div>
-            </div>
-            """, unsafe_allow_html=True)
+                """, unsafe_allow_html=True)
             return
     
     if scan_pressed:
